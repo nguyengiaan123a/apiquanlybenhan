@@ -1,0 +1,6 @@
+@yhctapp_HostAddress = http://localhost:5080
+
+GET {{yhctapp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
