@@ -2,6 +2,8 @@ using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using yhctapp.Model.DTO;
 using yhctapp.Model.Enitity;
 using yhctapp.Services.Interface;
@@ -15,11 +17,13 @@ namespace yhctapp.Controllers
     {
         private readonly IDocumentRecordRepository _repo;
         private readonly IMapper _mapper;
+        private readonly IImageService _imageService;
 
-        public DocumentRecordController(IDocumentRecordRepository repo, IMapper mapper)
+        public DocumentRecordController(IDocumentRecordRepository repo, IMapper mapper, IImageService imageService)
         {
             _repo = repo;
             _mapper = mapper;
+            _imageService = imageService;
         }
 
         // ===== Helper: Lấy thông tin phòng ban và quyền từ JWT =====
@@ -131,6 +135,93 @@ namespace yhctapp.Controllers
             {
                 return BadRequest(new { Message = "Xóa thất bại", Error = ex.Message });
             }
+        }
+
+        // ===== GET: api/DocumentRecord/{id}/files =====
+        [HttpGet("{id}/files")]
+        public async Task<IActionResult> GetFiles(int id)
+        {
+            var files = await _repo.GetFilesByRecordId(id);
+            return Ok(files);
+        }
+
+        // ===== POST: api/DocumentRecord/{id}/files =====
+        [HttpPost("{id}/files")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadFiles(int id, [FromForm] List<IFormFile> files)
+        {
+            var departmentId = GetDepartmentId();
+            var isAdmin = IsAdmin();
+            var record = await _repo.GetById(id, departmentId, isAdmin);
+            if (record == null)
+            {
+                return NotFound(new { Message = "Không tìm thấy hồ sơ hoặc bạn không có quyền truy cập" });
+            }
+
+            if (files == null || files.Count == 0)
+            {
+                return BadRequest(new { Message = "Không có file nào được chọn để tải lên" });
+            }
+
+            var statuses = new List<string>();
+            foreach (var file in files)
+            {
+                if (file.Length == 0) continue;
+
+                var uniqueFileName = await _imageService.UploadImageAsync(file);
+                if (uniqueFileName == null) continue;
+
+                var documentFile = new DocumentFile
+                {
+                    FileName = file.FileName,
+                    FilePath = uniqueFileName,
+                    FileType = file.ContentType,
+                    FileSize = file.Length,
+                    Id_DocumentRecord = id,
+                    CreatedDate = DateTime.Now
+                };
+
+                var result = await _repo.AddFile(documentFile);
+                if (result.Code == 1)
+                {
+                    statuses.Add($"Thành công: {file.FileName}");
+                }
+                else
+                {
+                    statuses.Add($"Thất bại: {file.FileName} - {result.Message}");
+                }
+            }
+
+            return Ok(new { Message = "Hoàn thành tải lên file", Details = statuses });
+        }
+
+        // ===== DELETE: api/DocumentRecord/files/{fileId} =====
+        [HttpDelete("files/{fileId}")]
+        public async Task<IActionResult> DeleteFile(int fileId)
+        {
+            var file = await _repo.GetFileById(fileId);
+            if (file == null)
+            {
+                return NotFound(new { Message = "Không tìm thấy file" });
+            }
+
+            var departmentId = GetDepartmentId();
+            var isAdmin = IsAdmin();
+            var record = await _repo.GetById(file.Id_DocumentRecord, departmentId, isAdmin);
+            if (record == null)
+            {
+                return BadRequest(new { Message = "Bạn không có quyền xóa file của hồ sơ này" });
+            }
+
+            _imageService.DeleteImage(file.FilePath);
+
+            var result = await _repo.DeleteFile(fileId);
+            if (result.Code == 1)
+            {
+                return Ok(new { Message = result.Message });
+            }
+
+            return BadRequest(new { Message = result.Message });
         }
     }
 }

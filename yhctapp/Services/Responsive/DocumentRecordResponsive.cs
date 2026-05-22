@@ -208,5 +208,61 @@ namespace yhctapp.Services.Responsive
                 CreatedDate = entity.CreatedDate
             };
         }
+
+        public async Task<List<DocumentFileVM>> GetFilesByRecordId(int recordId)
+        {
+            var files = await _dbcontext.DocumentFiles
+                .AsNoTracking()
+                .Where(x => x.Id_DocumentRecord == recordId)
+                .OrderByDescending(x => x.CreatedDate)
+                .ToListAsync();
+
+            return files.Select(x => new DocumentFileVM
+            {
+                Id = x.Id,
+                FileName = x.FileName,
+                FilePath = x.FilePath,
+                FileType = x.FileType,
+                FileSize = x.FileSize,
+                CreatedDate = x.CreatedDate,
+                Id_DocumentRecord = x.Id_DocumentRecord
+            }).ToList();
+        }
+
+        public async Task<Status> AddFile(DocumentFile file)
+        {
+            try
+            {
+                await _dbcontext.DocumentFiles.AddAsync(file);
+                await _dbcontext.SaveChangesAsync();
+                return new Status { Code = 1, Message = "Thêm file thành công" };
+            }
+            catch (Exception ex)
+            {
+                return new Status { Code = 0, Message = "Lỗi thêm file: " + ex.Message };
+            }
+        }
+
+        public async Task<DocumentFile?> GetFileById(int fileId)
+        {
+            return await _dbcontext.DocumentFiles.FindAsync(fileId);
+        }
+
+        public async Task<Status> DeleteFile(int fileId)
+        {
+            try
+            {
+                var file = await _dbcontext.DocumentFiles.FindAsync(fileId);
+                if (file == null) return new Status { Code = 0, Message = "Không tìm thấy file" };
+
+                _dbcontext.DocumentFiles.Remove(file);
+                await _dbcontext.SaveChangesAsync();
+                return new Status { Code = 1, Message = "Xóa file thành công" };
+            }
+            catch (Exception ex)
+            {
+                return new Status { Code = 0, Message = "Lỗi xóa file: " + ex.Message };
+            }
+        }
     }
 }

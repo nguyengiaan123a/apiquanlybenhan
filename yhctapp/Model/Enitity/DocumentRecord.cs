@@ -72,5 +72,6 @@ namespace yhctapp.Model.Enitity
         // ===== Navigation Properties =====
         public DepartmentRoom DepartmentRoom { get; set; } = null!;
         public DocumentGroup? DocumentGroup { get; set; }
+        public virtual ICollection<DocumentFile> DocumentFiles { get; set; } = new List<DocumentFile>();
     }
 }

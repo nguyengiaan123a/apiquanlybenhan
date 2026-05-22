@@ -20,5 +20,10 @@ namespace yhctapp.Services.Interface
         Task<Status> Update(int id, DocumentRecord updatedData, string? departmentId, bool isAdmin);
 
         Task<Status> Delete(int id, string? departmentId, bool isAdmin);
+
+        Task<List<DocumentFileVM>> GetFilesByRecordId(int recordId);
+        Task<Status> AddFile(DocumentFile file);
+        Task<DocumentFile?> GetFileById(int fileId);
+        Task<Status> DeleteFile(int fileId);
     }
 }

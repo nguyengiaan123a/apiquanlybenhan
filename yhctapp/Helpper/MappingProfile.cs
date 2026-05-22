@@ -30,6 +30,8 @@ namespace yhctapp.Helpper
             // document record
             CreateMap<DocumentRecord, DocumentRecordVM>().ReverseMap();
             CreateMap<DocumentRecordVM, DocumentRecord>().ForMember(dest => dest.Id, opt => opt.Ignore());
+            // document file
+            CreateMap<DocumentFile, DocumentFileVM>().ReverseMap();
         }
     }
 }

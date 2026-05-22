@@ -29,6 +29,7 @@ namespace yhctapp.Data
         public DbSet<DocumentGroup> DocumentGroups { get; set; }
         // bảng hồ sơ
         public DbSet<DocumentRecord> DocumentRecords { get; set; }
+        public DbSet<DocumentFile> DocumentFiles { get; set; }
 
 
 
@@ -132,6 +133,22 @@ namespace yhctapp.Data
                     .WithMany(x => x.DocumentRecords)
                     .HasForeignKey(x => x.Id_DocumentGroup)
                     .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            // ===== DocumentFile =====
+            builder.Entity<DocumentFile>(entity =>
+            {
+                entity.ToTable("DocumentFiles");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id).ValueGeneratedOnAdd();
+                entity.Property(x => x.FileName).IsRequired().HasMaxLength(255);
+                entity.Property(x => x.FilePath).IsRequired().HasMaxLength(500);
+                entity.Property(x => x.FileType).HasMaxLength(100);
+
+                entity.HasOne(x => x.DocumentRecord)
+                    .WithMany(x => x.DocumentFiles)
+                    .HasForeignKey(x => x.Id_DocumentRecord)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
 
