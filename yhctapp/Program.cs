@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using PayOS;
 using System.Text;
 using yhctapp.Data;
 using yhctapp.Helpper;
@@ -21,7 +20,6 @@ var builder = WebApplication.CreateBuilder(args);
 // =======================================================
 builder.Services.AddMemoryCache(); // Phải khai báo Cache đầu tiên
 builder.Services.AddControllers();
-
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = actionContext =>
@@ -53,9 +51,9 @@ builder.Services.AddDbContext<MyDbcontext>((serviceProvider, options) =>
         sqlServerOptionsAction: sqlOptions =>
         {
             sqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 30, 
-                maxRetryDelay: TimeSpan.FromSeconds(10), 
-                errorNumbersToAdd: null); 
+                maxRetryCount: 30,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorNumbersToAdd: null);
         });
 
     // Lấy Interceptor từ DI Container và gắn vào DbContext
@@ -113,15 +111,15 @@ builder.Services.AddAuthorization();
 // =======================================================
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IUser, UserResponsive>();
 builder.Services.AddScoped<IMenu, MenuResponsive>();
 builder.Services.AddScoped<IRole, RoleResponsive>();
 builder.Services.AddScoped<IRolePermisson, PermissonResponsive>();
 builder.Services.AddScoped<IAuthorization, AuthorizationResponsive>();
 builder.Services.AddScoped<IImageService, ImageServiceResponsive>();
-
-
+builder.Services.AddScoped<IDepartmentRoomRepository, DepartmentRoomResponsive>();
+builder.Services.AddScoped<IDocumentRecordRepository, DocumentRecordResponsive>();
 // =======================================================
 // 5. CORS (Cho phép React/Mobile gọi API)
 // =======================================================

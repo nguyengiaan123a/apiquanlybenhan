@@ -1,4 +1,6 @@
-﻿using System.Transactions;
+using System.Reflection.Emit;
+using System.Reflection.Metadata;
+using System.Transactions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using yhctapp.Model.Enitity;
@@ -7,8 +9,11 @@ namespace yhctapp.Data
 {
     public class MyDbcontext : IdentityDbContext<ApplicationUser>
     {
-        public MyDbcontext(DbContextOptions<MyDbcontext> options) : base(options)
+        private readonly ICurrentUserService _currentUserService;
+
+        public MyDbcontext(DbContextOptions<MyDbcontext> options, ICurrentUserService currentUserService) : base(options)
         {
+            _currentUserService = currentUserService;
         }
         #region
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
@@ -19,6 +24,11 @@ namespace yhctapp.Data
 
         public DbSet<RolePermission> RolePermissions { get; set; }
         // bảng danh mục dịch vụ 
+        public DbSet<DepartmentRoom> DepartmentRooms { get; set; }
+        // bảng danh mục văn bản 
+        public DbSet<DocumentGroup> DocumentGroups { get; set; }
+        // bảng hồ sơ
+        public DbSet<DocumentRecord> DocumentRecords { get; set; }
 
 
 
@@ -30,6 +40,7 @@ namespace yhctapp.Data
             // table name
             builder.Entity<Catogerymenu>().ToTable("Catogerymenu");
             builder.Entity<Menu>().ToTable("Menus");
+            builder.Entity<DepartmentRoom>().ToTable("DepartmentRooms");
             // dịch vụ
            
             // ===== menu cha =====
@@ -66,8 +77,62 @@ namespace yhctapp.Data
 
             });
 
-          
-          
+            // ===== DepartmentRoom =====
+            builder.Entity<DepartmentRoom>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id).IsRequired().HasMaxLength(200);
+                entity.Property(x => x.Room).IsRequired().HasMaxLength(200);
+            });
+            builder.Entity<ApplicationUser>().HasOne(x => x.DepartmentRoom).WithMany(x => x.ApplicationUsers).HasForeignKey(x => x.IdDepartmentRoom).OnDelete(DeleteBehavior.Cascade);
+            // ===== document group =====
+            builder.Entity<DocumentGroup>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id).ValueGeneratedOnAdd();
+                entity.Property(x => x.Title).IsRequired().HasMaxLength(200);
+                entity.HasOne(x => x.DepartmentRoom).WithMany(x => x.DocumentGroups).HasForeignKey(x => x.Id_DepartmentRoom).OnDelete(DeleteBehavior.Cascade);
+            });
+            // ===== Global Query Filter cho DocumentGroup =====
+            builder.Entity<DocumentGroup>(entity =>
+            {
+                entity.HasQueryFilter(x => _currentUserService.IsAdmin || x.Id_DepartmentRoom == _currentUserService.DepartmentId);
+            });
+
+            // ===== DocumentRecord =====
+            builder.Entity<DocumentRecord>(entity =>
+            {
+                entity.ToTable("DocumentRecords");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id).ValueGeneratedOnAdd();
+                entity.Property(x => x.Title).IsRequired().HasMaxLength(500);
+                entity.Property(x => x.Id_DepartmentRoom).IsRequired().HasMaxLength(200);
+                entity.Property(x => x.ViTriLuuTru).HasMaxLength(300);
+                entity.Property(x => x.NguoiQuanLy).HasMaxLength(200);
+                entity.Property(x => x.TinhTrang).HasMaxLength(100);
+                entity.Property(x => x.MucDoBaoMat).HasMaxLength(50);
+                entity.Property(x => x.GhiChu).HasMaxLength(1000);
+                entity.Property(x => x.CreatedDate).HasDefaultValueSql("GETDATE()");
+
+                // MaHoSo: người dùng tự nhập, lưu vào DB
+                entity.Property(x => x.MaHoSo).HasMaxLength(50);
+
+                // Computed properties: EF Core bỏ qua, không map vào DB
+                entity.Ignore(x => x.NamHetHan);
+                entity.Ignore(x => x.TrangThai);
+
+                // FK → DepartmentRoom
+                entity.HasOne(x => x.DepartmentRoom)
+                    .WithMany(x => x.DocumentRecords)
+                    .HasForeignKey(x => x.Id_DepartmentRoom)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // FK → DocumentGroup (optional)
+                entity.HasOne(x => x.DocumentGroup)
+                    .WithMany(x => x.DocumentRecords)
+                    .HasForeignKey(x => x.Id_DocumentGroup)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
 
 
         }

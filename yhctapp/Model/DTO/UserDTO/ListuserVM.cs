@@ -12,6 +12,9 @@
 
         public string ? Password { get; set; }
 
+        public string IdDepartmentRoom { get; set; } 
+
+
 
 
     }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace yhctapp.Model.Enitity
 {
@@ -7,9 +7,9 @@ namespace yhctapp.Model.Enitity
       
         public string Fullname { get; set; }
 
-        public DateTime DateOfBirth { get; set; }
+        public string IdDepartmentRoom { get; set;}
 
-        public int Gender { get; set; }
+        public  DepartmentRoom DepartmentRoom { get; set;}
 
 
     }

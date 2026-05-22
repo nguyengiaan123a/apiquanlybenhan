@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
@@ -120,6 +120,8 @@ namespace yhctapp.Services.Responsive
                             .Select(r => r.Name)
                             .FirstOrDefault(),
                         Password=u.PasswordHash,
+                        IdDepartmentRoom=u.IdDepartmentRoom,
+                  
 
                     })
                     .ToListAsync();
@@ -150,9 +152,8 @@ namespace yhctapp.Services.Responsive
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, existingUser.Id),
-                    new Claim(ClaimTypes.Name, existingUser.UserName),
                     new Claim("Fullname", existingUser.Fullname ?? ""),
-                    new Claim("PhoneNumber", existingUser.PhoneNumber ?? "")
+                    new Claim("IdDepartmentRoom", existingUser.IdDepartmentRoom.ToString())
                 };
                 foreach (var role in roles)
                 {
@@ -240,7 +241,8 @@ namespace yhctapp.Services.Responsive
             }
             catch (Exception ex)
             {
-                return new Status { Code = 500, Message = $"Registration failed: {ex.Message}" };
+                var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
+                return new Status { Code = 500, Message = $"Registration failed: {ex.Message} | Inner: {innerMsg}" };
             }
         }
 
@@ -260,9 +262,7 @@ namespace yhctapp.Services.Responsive
                 {
                     UserName = user.Username,
                     Fullname = user.Fullname,
-                    Gender = user.Gender,
-                    PhoneNumber = user.Username,
-                    DateOfBirth = user.DateofBird
+                    IdDepartmentRoom = user.IdDepartmentRoom,
                 };
 
                 var result = await _userManager.CreateAsync(applicationUser, user.Password);

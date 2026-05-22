@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using yhctapp.Data;
 
@@ -11,9 +12,11 @@ using yhctapp.Data;
 namespace yhctapp.Migrations
 {
     [DbContext(typeof(MyDbcontext))]
-    partial class MyDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20260521034109_documenttable")]
+    partial class documenttable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -327,72 +330,6 @@ namespace yhctapp.Migrations
                     b.ToTable("DocumentGroups");
                 });
 
-            modelBuilder.Entity("yhctapp.Model.Enitity.DocumentRecord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<string>("GhiChu")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("Id_DepartmentRoom")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int?>("Id_DocumentGroup")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MaHoSo")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("MucDoBaoMat")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("NamHieuLuc")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NguoiQuanLy")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("ThoiHanLuuTru")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TinhTrang")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("ViTriLuuTru")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id_DepartmentRoom");
-
-                    b.HasIndex("Id_DocumentGroup");
-
-                    b.ToTable("DocumentRecords", (string)null);
-                });
-
             modelBuilder.Entity("yhctapp.Model.Enitity.Menu", b =>
                 {
                     b.Property<int>("Id")
@@ -538,24 +475,6 @@ namespace yhctapp.Migrations
                     b.Navigation("DepartmentRoom");
                 });
 
-            modelBuilder.Entity("yhctapp.Model.Enitity.DocumentRecord", b =>
-                {
-                    b.HasOne("yhctapp.Model.Enitity.DepartmentRoom", "DepartmentRoom")
-                        .WithMany("DocumentRecords")
-                        .HasForeignKey("Id_DepartmentRoom")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("yhctapp.Model.Enitity.DocumentGroup", "DocumentGroup")
-                        .WithMany("DocumentRecords")
-                        .HasForeignKey("Id_DocumentGroup")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("DepartmentRoom");
-
-                    b.Navigation("DocumentGroup");
-                });
-
             modelBuilder.Entity("yhctapp.Model.Enitity.Menu", b =>
                 {
                     b.HasOne("yhctapp.Model.Enitity.Catogerymenu", "Catogerymenu")
@@ -588,13 +507,6 @@ namespace yhctapp.Migrations
                     b.Navigation("ApplicationUsers");
 
                     b.Navigation("DocumentGroups");
-
-                    b.Navigation("DocumentRecords");
-                });
-
-            modelBuilder.Entity("yhctapp.Model.Enitity.DocumentGroup", b =>
-                {
-                    b.Navigation("DocumentRecords");
                 });
 
             modelBuilder.Entity("yhctapp.Model.Enitity.Approle", b =>

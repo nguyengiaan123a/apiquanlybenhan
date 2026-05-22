@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace yhctapp.Model.DTO.UserDTO
 {
     public class UserVM
     {
-        public string? Id;
-        [Required(ErrorMessage = "Số điện thoại không được để trống")]
+        public string? Id { get; set; }
+        [Required(ErrorMessage = "Tài khoản không được để trống")]
         public string Username { get; set; } = null!;
         [Required(ErrorMessage = "Password không được để trống")]
         [RegularExpression(@"^$|^(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{6,}$",
@@ -13,12 +13,12 @@ namespace yhctapp.Model.DTO.UserDTO
         public string Password { get; set; } = null!;
         [Required(ErrorMessage = "Họ và tên không được để trống")]
         public string Fullname { get; set; } = null!;
-        public int Gender { get; set; } = 0;
 
-        [Required(ErrorMessage = "Ngày sinh không được để trống")]
-        public DateTime DateofBird { get; set; }
+        [Required(ErrorMessage = "Khoa không được để trống")]
+        public string IdDepartmentRoom { get; set; } = null!;
 
-        public string ?RoleName { get; set; }
+        [Required(ErrorMessage = "Chức vụ không được để trống")]
+        public string RoleName { get; set; } = null!;
 
     }
 }
