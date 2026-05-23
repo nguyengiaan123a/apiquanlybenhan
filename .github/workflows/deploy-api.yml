@@ -1,0 +1,33 @@
+name: Deploy .NET API to IIS
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+    - name: 📥 Tải source code mới nhất về Server
+      uses: actions/checkout@v4
+
+    - name: 🛠️ Cài đặt môi trường .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: ⚙️ Build và Publish code Backend
+      run: dotnet publish -c Release -o ./publish_output
+
+    - name: 🛑 Dừng ứng dụng trên IIS (Chống lỗi khóa file)
+      shell: powershell
+      run: Import-Module WebAdministration; Stop-WebAppPool -Name "apiqlhsba"
+
+    - name: 🚀 Copy file đè lên thư mục web IIS
+      shell: powershell
+      run: Copy-Item -Path ./publish_output/* -Destination "C:\inetpub\wwwroot\api_qlba" -Recurse -Force
+
+    - name: 🟢 Khởi động lại ứng dụng trên IIS
+      shell: powershell
+      run: Import-Module WebAdministration; Start-WebAppPool -Name "apiqlhsba"
