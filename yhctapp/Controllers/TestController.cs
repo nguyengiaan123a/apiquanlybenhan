@@ -17,6 +17,6 @@ namespace yhctapp.Controllers
     {
         [HttpGet]
         [Route("/api/test")]
-        public IActionResult Test() => Ok("Test thành công 1");
+        public IActionResult Test() => Ok("Test thành công 3");
     }
 }
