@@ -1,5 +1,6 @@
 name: Deploy .NET API to IIS
 
+# Chạy tự động khi có code đẩy lên nhánh master
 on:
   push:
     branches: [ "master" ]
@@ -20,9 +21,12 @@ jobs:
     - name: ⚙️ Build và Publish code Backend
       run: dotnet publish -c Release -o ./publish_output
 
-    - name: 🛑 Dừng ứng dụng trên IIS (Chống lỗi khóa file)
+    - name: 🛑 Dừng ứng dụng trên IIS (Chờ 5s nhả file)
       shell: powershell
-      run: Import-Module WebAdministration; Stop-WebAppPool -Name "apiqlhsba"
+      run: |
+        Import-Module WebAdministration
+        Stop-WebAppPool -Name "apiqlhsba"
+        Start-Sleep -Seconds 5
 
     - name: 🚀 Copy file đè lên thư mục web IIS
       shell: powershell
@@ -30,4 +34,6 @@ jobs:
 
     - name: 🟢 Khởi động lại ứng dụng trên IIS
       shell: powershell
-      run: Import-Module WebAdministration; Start-WebAppPool -Name "apiqlhsba"
+      run: |
+        Import-Module WebAdministration
+        Start-WebAppPool -Name "apiqlhsba"
