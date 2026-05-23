@@ -56,9 +56,9 @@ namespace yhctapp.Controllers
                     Response.Cookies.Append("jwt_token", login.Message, new CookieOptions
                     {
                         HttpOnly = true,
-                        Secure = true, // Set to true in production (requires HTTPS)
-                        SameSite = SameSiteMode.None, // Or Lax, depending on your needs
-                        Expires = DateTimeOffset.UtcNow.AddHours(2)
+                        Secure = false, // Set to true in production (requires HTTPS)
+                        SameSite = SameSiteMode.Lax, // Or Lax, depending on your needs
+                        Expires = DateTime.UtcNow.AddDays(7)
                     });
 
                     return Ok(new { success = true, message = login.Message });
