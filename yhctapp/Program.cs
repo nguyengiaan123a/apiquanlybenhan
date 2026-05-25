@@ -130,7 +130,8 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
-            .WithOrigins("http://quanlyhoso.benhvienmyphuoc.vn"));
+            .AllowAnyOrigin()
+            );
 });
 
 // =======================================================
