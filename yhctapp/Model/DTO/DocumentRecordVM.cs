@@ -42,6 +42,8 @@ namespace yhctapp.Model.DTO
         // FK → Nhóm Hồ Sơ
         public int? Id_DocumentGroup { get; set; }
 
+        public string? LoaiHoSo { get; set; }
+
         // Tên hiển thị (include từ navigation)
         public string? TenNhomHoSo { get; set; }
         public string? TenPhongBan { get; set; }

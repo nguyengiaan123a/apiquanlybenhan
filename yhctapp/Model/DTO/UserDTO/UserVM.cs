@@ -17,6 +17,8 @@ namespace yhctapp.Model.DTO.UserDTO
         [Required(ErrorMessage = "Khoa không được để trống")]
         public string IdDepartmentRoom { get; set; } = null!;
 
+        public string? ChucVu { get; set; }
+
         [Required(ErrorMessage = "Chức vụ không được để trống")]
         public string RoleName { get; set; } = null!;
 

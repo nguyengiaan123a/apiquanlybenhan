@@ -8,6 +8,7 @@ namespace yhctapp.Model.DTO
         public string Room { get; set; } = string.Empty;
         public int ExpiredCount { get; set; }
         public int SoonToExpireCount { get; set; }
+        public int ValidCount { get; set; }
         public int TotalCount { get; set; }
     }
 }

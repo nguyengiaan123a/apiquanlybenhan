@@ -1,4 +1,4 @@
-﻿namespace yhctapp.Model.DTO.UserDTO
+namespace yhctapp.Model.DTO.UserDTO
 {
     public class ListuserVM
     {
@@ -13,6 +13,8 @@
         public string ? Password { get; set; }
 
         public string IdDepartmentRoom { get; set; } 
+
+        public string? ChucVu { get; set; }
 
 
 

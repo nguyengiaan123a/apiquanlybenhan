@@ -55,6 +55,7 @@ namespace yhctapp.Controllers
                         Room = dept.Room,
                         ExpiredCount = dept.DocumentRecords.Count(rec => rec.NamHieuLuc > 0 && rec.ThoiHanLuuTru < 999 && rec.NamHieuLuc + rec.ThoiHanLuuTru < currentYear),
                         SoonToExpireCount = dept.DocumentRecords.Count(rec => rec.NamHieuLuc > 0 && rec.ThoiHanLuuTru < 999 && rec.NamHieuLuc + rec.ThoiHanLuuTru == currentYear),
+                        ValidCount = dept.DocumentRecords.Count(rec => rec.NamHieuLuc > 0 && (rec.ThoiHanLuuTru >= 999 || rec.NamHieuLuc + rec.ThoiHanLuuTru > currentYear)),
                         TotalCount = dept.DocumentRecords.Count()
                     })
                     .ToListAsync();

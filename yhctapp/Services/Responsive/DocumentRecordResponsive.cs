@@ -132,6 +132,12 @@ namespace yhctapp.Services.Responsive
                 existing.MucDoBaoMat = updatedData.MucDoBaoMat;
                 existing.GhiChu = updatedData.GhiChu;
                 existing.Id_DocumentGroup = updatedData.Id_DocumentGroup;
+                existing.LoaiHoSo = updatedData.LoaiHoSo;
+
+                if (isAdmin && !string.IsNullOrEmpty(updatedData.Id_DepartmentRoom))
+                {
+                    existing.Id_DepartmentRoom = updatedData.Id_DepartmentRoom;
+                }
 
                 _dbcontext.DocumentRecords.Update(existing);
                 await _dbcontext.SaveChangesAsync();
@@ -203,6 +209,7 @@ namespace yhctapp.Services.Responsive
                 MucDoBaoMat = entity.MucDoBaoMat,
                 GhiChu = entity.GhiChu,
                 Id_DocumentGroup = entity.Id_DocumentGroup,
+                LoaiHoSo = entity.LoaiHoSo,
                 TenNhomHoSo = entity.DocumentGroup?.Title,
                 TenPhongBan = entity.DepartmentRoom?.Room,
                 CreatedDate = entity.CreatedDate

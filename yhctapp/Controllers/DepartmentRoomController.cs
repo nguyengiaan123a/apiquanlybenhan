@@ -10,9 +10,9 @@ using yhctapp.Services.Interface;
 namespace yhctapp.Controllers
 {
     [Route("api/[controller]")]
-    // [ApiController]
-    // [Authorize]
-    // [CheckQuyen("/quan-ly-danh-muc-menu")]
+    [ApiController]
+    [Authorize]
+    [CheckQuyen("/quan-ly-danh-muc-menu")]
 
     public class DepartmentRoomControlller : ControllerBase
     {

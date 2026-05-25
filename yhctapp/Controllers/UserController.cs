@@ -11,8 +11,8 @@ namespace yhctapp.Controllers
 {
     [Route("api/[controller]")]
      [ApiController]
-    // [Authorize]
-    // [CheckQuyen("/quan-ly-tai-khoan")] // Thêm middleware kiểm tra quyền truy cập
+    [Authorize]
+    [CheckQuyen("/quan-ly-tai-khoan")] // Thêm middleware kiểm tra quyền truy cập
     public class UserController : ControllerBase
     {
         private readonly IUser _user;

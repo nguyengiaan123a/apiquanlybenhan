@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using yhctapp.Services.Interface;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace yhctapp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AuthorizationController : ControllerBase
     {
         public readonly IAuthorization _authorization;

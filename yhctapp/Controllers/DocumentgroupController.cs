@@ -13,8 +13,8 @@ namespace yhctapp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    // [Authorize]
-    // [CheckQuyen("/quan-ly-danh-muc-menu")]
+    [Authorize]
+    [CheckQuyen("/quan-ly-danh-muc-menu")]
 
     public class DocumentgroupController : BaseCrudController<DocumentGroup, DocumentVM>
     {

@@ -121,8 +121,7 @@ namespace yhctapp.Services.Responsive
                             .FirstOrDefault(),
                         Password=u.PasswordHash,
                         IdDepartmentRoom=u.IdDepartmentRoom,
-                  
-
+                        ChucVu=u.ChucVu,
                     })
                     .ToListAsync();
 
@@ -263,6 +262,7 @@ namespace yhctapp.Services.Responsive
                     UserName = user.Username,
                     Fullname = user.Fullname,
                     IdDepartmentRoom = user.IdDepartmentRoom,
+                    ChucVu = user.ChucVu,
                 };
 
                 var result = await _userManager.CreateAsync(applicationUser, user.Password);

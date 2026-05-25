@@ -179,7 +179,8 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseStaticFiles(); // Đặt trước Routing để load hình ảnh không bị chặn
+// Đặt trước Routing để load hình ảnh không bị chặn (Đã chuyển xuống dưới để phân quyền)
+// app.UseStaticFiles(); 
 
 app.UseRouting();
 
@@ -188,6 +189,72 @@ app.UseCors("AllowReact"); // CORS Bắt buộc phải nằm GIỮA Routing và 
 app.UseAuthentication(); // Bắt buộc phải nằm TRƯỚC Authorization
 app.UseAuthorization();
 
+// Đặt Middleware kiểm tra quyền truy cập file TRƯỚC UseStaticFiles
+app.Use(async (context, next) =>
+{
+    // Kiểm tra nếu request bắt đầu bằng /Uploads
+    if (context.Request.Path.StartsWithSegments("/Uploads", StringComparison.OrdinalIgnoreCase))
+    {
+        // 1. Kiểm tra xem user đã đăng nhập chưa
+        if (context.User.Identity == null || !context.User.Identity.IsAuthenticated)
+        {
+            context.Response.StatusCode = 401; // Unauthorized
+            await context.Response.WriteAsync("Unauthorized access to file.");
+            return; // Dừng pipeline
+        }
+
+        // 2. Phân quyền nâng cao: Chỉ khoa mình hoặc Admin mới xem được
+        try
+        {
+            // Lấy DbContext từ DI Container
+            var dbContext = context.RequestServices.GetRequiredService<MyDbcontext>();
+            
+            // Lấy tên file từ đường dẫn URL (ví dụ: guid_tenfile.pdf)
+            var fileName = System.IO.Path.GetFileName(context.Request.Path.Value);
+
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                // Tìm file trong Database kèm thông tin Hồ sơ chứa nó
+                var fileRecord = await dbContext.DocumentFiles
+                    .Include(f => f.DocumentRecord)
+                    .FirstOrDefaultAsync(f => f.FilePath == fileName);
+
+                if (fileRecord != null && fileRecord.DocumentRecord != null)
+                {
+                    // Lấy mã phòng ban của Hồ sơ
+                    var fileDepartmentId = fileRecord.DocumentRecord.Id_DepartmentRoom;
+                    
+                    // Lấy mã phòng ban của User đang đăng nhập
+                    var userDepartmentId = context.User.Claims.FirstOrDefault(c => c.Type == "IdDepartmentRoom")?.Value;
+                    
+                    // Kiểm tra Role Admin
+                    var isAdmin = context.User.HasClaim(c => c.Type == System.Security.Claims.ClaimTypes.Role && c.Value.ToUpper() == "ADMIN");
+
+                    // Nếu không phải Admin và cũng không cùng phòng ban -> Cấm truy cập
+                    if (!isAdmin && !string.Equals(userDepartmentId, fileDepartmentId, StringComparison.OrdinalIgnoreCase))
+                    {
+                        context.Response.StatusCode = 403; // Forbidden
+                        await context.Response.WriteAsync("Forbidden: Bạn không có quyền xem file của khoa khác.");
+                        return; // Dừng pipeline
+                    }
+                }
+            }
+        }
+        catch (Exception)
+        {
+            // Nếu có lỗi truy vấn DB, cho phép tiếp tục hoặc log lại (ở đây chọn từ chối an toàn)
+            context.Response.StatusCode = 500;
+            await context.Response.WriteAsync("Internal Server Error.");
+            return;
+        }
+    }
+    
+    // Nếu hợp lệ hoặc không phải /Uploads, tiếp tục pipeline
+    await next();
+});
+
+// Dùng UseStaticFiles bình thường sau khi đã lọc quyền
+app.UseStaticFiles();
 app.MapControllers();
 
 app.Run();

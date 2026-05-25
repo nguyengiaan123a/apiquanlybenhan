@@ -9,6 +9,8 @@ namespace yhctapp.Model.Enitity
 
         public string IdDepartmentRoom { get; set;}
 
+        public string? ChucVu { get; set; }
+
         public  DepartmentRoom DepartmentRoom { get; set;}
 
 

@@ -66,6 +66,9 @@ namespace yhctapp.Model.Enitity
         // FK → Nhóm Hồ Sơ (DocumentGroup)
         public int? Id_DocumentGroup { get; set; }
 
+        // Loại hồ sơ
+        public string? LoaiHoSo { get; set; }
+
         // Ngày tạo record
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 

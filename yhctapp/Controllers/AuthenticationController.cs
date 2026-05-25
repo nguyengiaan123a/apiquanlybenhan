@@ -82,7 +82,7 @@ namespace yhctapp.Controllers
         {
             try
             {
-                // Kiểm tra xem cookie có tồn tại không trước khi xóa (tùy chọn nhưng nên có)
+                // Kiểm tra xem cookie có tồn tại không trước khi xóa (tùy chọn nhưng nên có
                 if (Request.Cookies["jwt_token"] != null)
                 {
                     // Xóa cookie bằng cách set ngày hết hạn về quá khứ
@@ -110,29 +110,29 @@ namespace yhctapp.Controllers
                 return BadRequest(new { success = false, message = "Lỗi khi đăng xuất: " + ex.Message });
             }
         }
-        [HttpPost]
-        [Route("/api/dang-ky-khach-hang")]
-        public async Task<IActionResult> Register(UserVM user)
-        {
-            try
-            {
-                var register = await _user.RegisterCustomer(user);
+        // [HttpPost]
+        // [Route("/api/dang-ky-khach-hang")]
+        // public async Task<IActionResult> Register(UserVM user)
+        // {
+        //     try
+        //     {
+        //         var register = await _user.RegisterCustomer(user);
 
-                if (register.Code == 200)
-                {
-                    return Ok(new { success = true, message = register.Message });
-                }
-                else
-                {
-                    // Lỗi logic từ Service (ví dụ: trùng username)
-                    return BadRequest(new { success = false, message = register.Message });
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { success = false, message = ex.Message });
-            }
-        }
+        //         if (register.Code == 200)
+        //         {
+        //             return Ok(new { success = true, message = register.Message });
+        //         }
+        //         else
+        //         {
+        //             // Lỗi logic từ Service (ví dụ: trùng username)
+        //             return BadRequest(new { success = false, message = register.Message });
+        //         }
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return BadRequest(new { success = false, message = ex.Message });
+        //     }
+        // }
 
 
 
