@@ -127,10 +127,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact",
           policy => policy
-            .WithOrigins("http://quanlyhoso.benhvienmyphuoc.vn")
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials());
+            .AllowCredentials()
+            .WithOrigins("http://quanlyhoso.benhvienmyphuoc.vn"));
 });
 
 // =======================================================
