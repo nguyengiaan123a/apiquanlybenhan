@@ -13,7 +13,7 @@ namespace yhctapp.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    [CheckQuyen("/quan-ly-ho-so")]
+    //[CheckQuyen("/quan-ly-ho-so")]
     public class DocumentRecordController : ControllerBase
     {
         private readonly IDocumentRecordRepository _repo;
