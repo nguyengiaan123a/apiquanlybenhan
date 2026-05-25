@@ -130,10 +130,9 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
-            .AllowAnyOrigin()
+            .SetIsOriginAllowed(origin => true) // <--- Thay thế dòng .WithOrigins(...) bằng dòng này
             );
 });
-
 // =======================================================
 // 6. SWAGGER (Tài liệu API)
 // =======================================================
