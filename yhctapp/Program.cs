@@ -126,8 +126,8 @@ builder.Services.AddScoped<IDocumentRecordRepository, DocumentRecordResponsive>(
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact",
-        policy => policy
-              .WithOrigins("http://quanlyhoso.benhvienmyphuoc.vn")
+          policy => policy
+            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());

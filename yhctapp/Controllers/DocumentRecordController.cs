@@ -117,7 +117,6 @@ namespace yhctapp.Controllers
             }
         }
 
-        // ===== DELETE: api/DocumentRecord/{id} =====
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -126,9 +125,19 @@ namespace yhctapp.Controllers
                 var departmentId = GetDepartmentId();
                 var isAdmin = IsAdmin();
 
+                // Get associated files before deleting the record
+                var files = await _repo.GetFilesByRecordId(id);
+
                 var result = await _repo.Delete(id, departmentId, isAdmin);
                 if (result.Code == 1)
+                {
+                    // Delete physical files
+                    foreach (var file in files)
+                    {
+                        _imageService.DeleteImage(file.FilePath);
+                    }
                     return Ok(new { Message = result.Message });
+                }
 
                 return BadRequest(new { Message = result.Message });
             }
