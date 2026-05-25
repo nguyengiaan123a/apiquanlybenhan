@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace yhctapp.Controllers
 {
+    // hàm phần quyền
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
