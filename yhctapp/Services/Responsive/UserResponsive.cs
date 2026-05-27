@@ -360,5 +360,59 @@ namespace yhctapp.Services.Responsive
         return new Status { Code = 500, Message = ex.Message };
     }
 }
+        public async Task<Status> ChangePassword(string id, ChangePasswordVM model)
+        {
+            try
+            {
+                var existingUser = await _userManager.FindByIdAsync(id);
+                if (existingUser == null)
+                {
+                    return new Status { Code = 404, Message = "Không tìm thấy người dùng" };
+                }
+
+                if (model.NewPassword != model.ConfirmPassword)
+                {
+                    return new Status { Code = 400, Message = "Xác nhận mật khẩu không khớp" };
+                }
+
+                var result = await _userManager.ChangePasswordAsync(existingUser, model.OldPassword, model.NewPassword);
+                if (!result.Succeeded)
+                {
+                    return new Status { Code = 400, Message = string.Join("; ", result.Errors.Select(x => x.Description)) };
+                }
+
+                return new Status { Code = 200, Message = "Đổi mật khẩu thành công" };
+            }
+            catch (Exception ex)
+            {
+                return new Status { Code = 500, Message = ex.Message };
+            }
+        }
+
+        public async Task<Status> UpdateProfile(string id, UpdateProfileVM model)
+        {
+            try
+            {
+                var existingUser = await _userManager.FindByIdAsync(id);
+                if (existingUser == null)
+                {
+                    return new Status { Code = 404, Message = "Không tìm thấy người dùng" };
+                }
+
+                existingUser.Fullname = model.FullName;
+                
+                var result = await _userManager.UpdateAsync(existingUser);
+                if (!result.Succeeded)
+                {
+                    return new Status { Code = 400, Message = string.Join("; ", result.Errors.Select(x => x.Description)) };
+                }
+
+                return new Status { Code = 200, Message = "Cập nhật thông tin thành công" };
+            }
+            catch (Exception ex)
+            {
+                return new Status { Code = 500, Message = ex.Message };
+            }
+        }
     }
 }

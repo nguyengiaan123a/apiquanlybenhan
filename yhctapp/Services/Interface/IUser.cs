@@ -1,4 +1,4 @@
-﻿using yhctapp.Helpper;
+using yhctapp.Helpper;
 using yhctapp.Model.DTO.UserDTO;
 
 namespace yhctapp.Services.Interface
@@ -19,11 +19,9 @@ namespace yhctapp.Services.Interface
 
         public Task<Status> UpdateUser(string id, UserVM user);
 
+        public Task<Status> ChangePassword(string id, ChangePasswordVM model);
 
-
-
-
-
+        public Task<Status> UpdateProfile(string id, UpdateProfileVM model);
 
     }
 }

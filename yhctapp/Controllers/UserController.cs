@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System;
 using yhctapp.Model.DTO.UserDTO;
 using yhctapp.Services.Interface;
+using System.Security.Claims;
 
 namespace yhctapp.Controllers
 {
@@ -126,6 +127,78 @@ namespace yhctapp.Controllers
                 else
                 {
                     return BadRequest(new { success = false, message = deleteResult.Message });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPut]
+        [Route("/api/cap-nhat-thong-tin")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileVM model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                    return BadRequest(new { success = false, message = string.Join(", ", errors) });
+                }
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { success = false, message = "Không xác định được người dùng." });
+                }
+
+                var updateResult = await _user.UpdateProfile(userId, model);
+
+                if (updateResult.Code == 200)
+                {
+                    return Ok(new { success = true, message = updateResult.Message });
+                }
+                else
+                {
+                    return BadRequest(new { success = false, message = updateResult.Message });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPut]
+        [Route("/api/doi-mat-khau")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordVM model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                    return BadRequest(new { success = false, message = string.Join(", ", errors) });
+                }
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { success = false, message = "Không xác định được người dùng." });
+                }
+
+                var result = await _user.ChangePassword(userId, model);
+
+                if (result.Code == 200)
+                {
+                    return Ok(new { success = true, message = result.Message });
+                }
+                else
+                {
+                    return BadRequest(new { success = false, message = result.Message });
                 }
             }
             catch (Exception ex)
