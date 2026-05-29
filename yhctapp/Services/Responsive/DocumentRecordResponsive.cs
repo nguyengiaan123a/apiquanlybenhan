@@ -96,6 +96,11 @@ namespace yhctapp.Services.Responsive
         {
             try
             {
+                if (await _dbcontext.DocumentRecords.AnyAsync(x => x.MaHoSo == entity.MaHoSo))
+                {
+                    return new Status { Code = 0, Message = "Mã hồ sơ đã tồn tại" };
+                }
+
                 await _dbcontext.DocumentRecords.AddAsync(entity);
                 await _dbcontext.SaveChangesAsync();
                 return new Status { Code = 1, Message = "Thêm hồ sơ thành công" };
@@ -110,6 +115,11 @@ namespace yhctapp.Services.Responsive
         {
             try
             {
+                if (await _dbcontext.DocumentRecords.AnyAsync(x => x.MaHoSo == updatedData.MaHoSo && x.Id != id))
+                {
+                    return new Status { Code = 0, Message = "Mã hồ sơ đã tồn tại" };
+                }
+
                 var query = _dbcontext.DocumentRecords.AsQueryable();
 
                 // Phân quyền: chỉ cho phép sửa hồ sơ trong phòng ban (trừ Admin)
@@ -133,6 +143,7 @@ namespace yhctapp.Services.Responsive
                 existing.GhiChu = updatedData.GhiChu;
                 existing.Id_DocumentGroup = updatedData.Id_DocumentGroup;
                 existing.LoaiHoSo = updatedData.LoaiHoSo;
+                existing.SoLan = updatedData.SoLan;
 
                 if (isAdmin && !string.IsNullOrEmpty(updatedData.Id_DepartmentRoom))
                 {
@@ -210,6 +221,7 @@ namespace yhctapp.Services.Responsive
                 GhiChu = entity.GhiChu,
                 Id_DocumentGroup = entity.Id_DocumentGroup,
                 LoaiHoSo = entity.LoaiHoSo,
+                SoLan = entity.SoLan,
                 TenNhomHoSo = entity.DocumentGroup?.Title,
                 TenPhongBan = entity.DepartmentRoom?.Room,
                 CreatedDate = entity.CreatedDate

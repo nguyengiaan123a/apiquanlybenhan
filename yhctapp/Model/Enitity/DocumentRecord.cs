@@ -69,6 +69,9 @@ namespace yhctapp.Model.Enitity
         // Loại hồ sơ
         public string? LoaiHoSo { get; set; }
 
+        // Số lần
+        public int? SoLan { get; set; }
+
         // Ngày tạo record
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 

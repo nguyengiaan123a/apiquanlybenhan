@@ -44,6 +44,8 @@ namespace yhctapp.Model.DTO
 
         public string? LoaiHoSo { get; set; }
 
+        public int? SoLan { get; set; }
+
         // Tên hiển thị (include từ navigation)
         public string? TenNhomHoSo { get; set; }
         public string? TenPhongBan { get; set; }
